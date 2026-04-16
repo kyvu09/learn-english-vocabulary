@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang chủ - English Vocabulary Master</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1>English Vocabulary Master</h1>
+          <p>"thằng nào có tiền thì nạp tiền vào donate cho tao ít thì 36k nhiều thì 360k, chúng mày hiểu ý anh nói gì chưa"</p>
+        </div>
+        <div class="auth-pill">
+          <div>
+            <div class="small" style="opacity: 0.8">Trạng thái</div>
+            <strong id="authStateText">Đang kiểm tra...</strong>
+          </div>
+          <button id="logoutBtn" class="btn btn-ghost" type="button" style="background: white; color: var(--danger); border: none;">Đăng xuất</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="mainApp" class="main-app show">
+      
+      <!-- Bảng thống kê -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Tổng quan học tập</h2>
+            <div class="sub">Đánh giá mức độ hoàn thành và tiến độ của bạn.</div>
+          </div>
+          <span id="userBadge" class="badge">Đang tải...</span>
+        </div>
+        <div id="statsGrid" class="stats-grid"></div>
+      </section>
+
+      <!-- KHÔNG CÒN CHUNG HÀNG - XẾP DỌC -->
+      
+      <!-- Quản lý buổi học -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Quản lý buổi học</h2>
+            <div class="sub">Phân chia nhóm từ vựng hợp lý.</div>
+          </div>
+        </div>
+
+        <form id="sessionForm">
+          <div class="field">
+            <label for="sessionNameInput">Tên buổi học</label>
+            <input id="sessionNameInput" class="input" type="text" placeholder="Ví dụ: Buổi 1 - Chủ đề: Công việc" required />
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Tạo buổi học</button>
+          </div>
+        </form>
+
+        <div id="sessionMessage" class="status"></div>
+
+        <div style="margin-top:24px;">
+          <div class="sub" style="margin-bottom:12px; font-weight: 600; color: var(--text);">Danh sách buổi học:</div>
+          <div id="sessionList" class="chip-row"></div>
+        </div>
+      </section>
+
+      <!-- Thêm từ vựng (Form xếp dọc) -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Thêm từ vựng</h2>
+            <div class="sub">Tự động tra từ điển. <strong>Bạn nên tự kiểm tra và sửa lại nghĩa cho phù hợp.</strong></div>
+          </div>
+        </div>
+
+        <form id="wordForm">
+          <div class="field">
+            <label for="wordSessionSelect">Chọn buổi học</label>
+            <select id="wordSessionSelect" class="select"></select>
+          </div>
+
+          <div class="field">
+            <label for="englishWordInput">Từ tiếng Anh</label>
+            <input id="englishWordInput" class="input" type="text" placeholder="Ví dụ: determine" autocomplete="off" />
+          </div>
+
+          <div class="inline-actions" style="margin-bottom:16px;">
+            <button id="lookupBtn" type="button" class="btn btn-secondary">Gợi ý tự động</button>
+            <button id="clearSuggestionBtn" type="button" class="btn btn-ghost">Xóa gợi ý</button>
+          </div>
+
+          <div id="suggestionStatus" class="status"></div>
+          <div id="suggestionContainer" class="suggestion-shell"></div>
+
+          <!-- Các input tách thành từng hàng dọc -->
+          <div class="field">
+            <label for="phoneticInput">Phiên âm</label>
+            <input id="phoneticInput" class="input" type="text" placeholder="/dɪˈtɜːmɪn/" />
+          </div>
+          
+          <div class="field">
+            <label for="partOfSpeechSelect">Từ loại</label>
+            <select id="partOfSpeechSelect" class="select">
+              <option value="">-- Chọn từ loại --</option>
+              <option value="noun">Danh từ (n)</option>
+              <option value="verb">Động từ (v)</option>
+              <option value="adjective">Tính từ (adj)</option>
+              <option value="adverb">Trạng từ (adv)</option>
+              <option value="pronoun">Đại từ (pronoun)</option>
+              <option value="preposition">Giới từ (prep)</option>
+              <option value="conjunction">Liên từ (conj)</option>
+              <option value="interjection">Thán từ (interj)</option>
+              <option value="phrasal verb">Cụm động từ (phrasal verb)</option>
+              <option value="other">Khác</option>
+            </select>
+          </div>
+          
+          <div class="field">
+            <label for="audioUrlInput">Audio URL (Tùy chọn)</label>
+            <input id="audioUrlInput" class="input" type="url" placeholder="https://..." />
+          </div>
+
+          <div class="field">
+            <label for="meaningInput">Nghĩa tiếng Việt (Có thể tùy chỉnh)</label>
+            <input id="meaningInput" class="input" type="text" placeholder="Ví dụ: quyết định, xác định" required />
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Lưu từ vựng</button>
+          </div>
+        </form>
+
+        <div id="wordMessage" class="status"></div>
+      </section>
+
+      <!-- Danh sách từ vựng -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Danh sách từ vựng</h2>
+            <div class="sub">Mặc định sắp xếp theo bảng chữ cái A → Z.</div>
+          </div>
+          <span id="wordCountBadge" class="badge">0 từ</span>
+        </div>
+
+        <div class="toolbar" style="margin-bottom:20px;">
+          <select id="wordFilterSession" class="select" style="max-width:280px;">
+            <option value="all">Tất cả buổi học</option>
+          </select>
+          <input id="wordSearchInput" class="input" type="search" placeholder="🔍 Tìm theo từ / nghĩa / buổi học..." style="max-width:380px;" />
+        </div>
+
+        <div id="wordTableContainer" class="table-wrap"></div>
+      </section>
+
+      <!-- Bảng xếp hạng -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Bảng xếp hạng từ đã thuộc</h2>
+            <div class="sub">Tiến độ ghi nhớ dựa trên kết quả Quiz.</div>
+          </div>
+        </div>
+        <div id="rankingTableContainer" class="table-wrap"></div>
+      </section>
+
+      <!-- Khu vực luyện tập -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Khu vực luyện tập</h2>
+            <div class="sub">Quiz có tuỳ chỉnh riêng, các chế độ khác dùng bộ lọc chung.</div>
+          </div>
+          <div class="mode-tabs">
+            <button class="mode-tab active" type="button" data-mode="quiz">Quiz</button>
+            <button class="mode-tab" type="button" data-mode="spelling">Spelling</button>
+            <button class="mode-tab" type="button" data-mode="listening">Listening</button>
+            <button class="mode-tab" type="button" data-mode="sentence">Sentence</button>
+          </div>
+        </div>
+
+        <div class="toolbar" style="margin-bottom:20px; padding-bottom: 16px; border-bottom: 1px solid var(--line-soft);">
+          <select id="practiceSessionFilter" class="select" style="max-width:320px;">
+            <option value="all">Thực hành với tất cả buổi học</option>
+          </select>
+          <div class="inline-actions">
+            <button id="openQuizConfigBtn" type="button" class="btn btn-primary">⚙️ Cấu hình Bài Kiểm Tra</button>
+          </div>
+        </div>
+
+        <div id="practiceContainer"></div>
+      </section>
+
+      <!-- Lịch sử -->
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h2>Lịch sử Quiz</h2>
+            <div class="sub">Xem lại các bài đã hoàn thành để rút kinh nghiệm.</div>
+          </div>
+        </div>
+        <div id="historyContainer"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Modal cấu hình Quiz -->
+  <div id="quizModal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="section-title" style="margin-bottom:20px;">
+        <div>
+          <h3>Cấu hình bài Quiz</h3>
+          <div class="sub">Tùy chỉnh độ khó và số lượng câu hỏi trước khi bắt đầu.</div>
+        </div>
+        <button id="closeQuizModalBtn" type="button" class="close-x">×</button>
+      </div>
+
+      <form id="quizConfigForm">
+        <div class="field">
+          <label for="quizSourceSelect">Nguồn từ vựng</label>
+          <select id="quizSourceSelect" class="select">
+            <option value="all">Tất cả từ vựng đang có</option>
+            <option value="single">Chỉ học một buổi cụ thể</option>
+          </select>
+        </div>
+
+        <div class="field hidden" id="quizSessionField">
+          <label for="quizSessionSelect">Chọn buổi học</label>
+          <select id="quizSessionSelect" class="select"></select>
+        </div>
+
+        <!-- Tách thành các hàng dọc -->
+        <div class="field">
+          <label for="quizWordCountInput">Số lượng câu hỏi</label>
+          <input id="quizWordCountInput" class="input" type="number" min="1" value="10" />
+        </div>
+        
+        <div class="field">
+          <label for="quizDirectionSelect">Kiểu câu hỏi</label>
+          <select id="quizDirectionSelect" class="select">
+            <option value="mixed">Trộn ngẫu nhiên (Khuyên dùng)</option>
+            <option value="en-vi">Anh → Việt</option>
+            <option value="vi-en">Việt → Anh</option>
+          </select>
+        </div>
+
+        <div class="actions" style="margin-top: 24px; justify-content: flex-end;">
+          <button id="cancelQuizConfigBtn" class="btn btn-ghost" type="button">Hủy bỏ</button>
+          <button class="btn btn-primary" type="submit">Bắt đầu Quiz ngay</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+</body>
+</html>
