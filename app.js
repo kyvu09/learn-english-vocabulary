@@ -469,7 +469,7 @@ function bindWordEvents() {
     const audio = new Audio(url);
     audio.play().catch(() => alert("Không phát được audio gốc."));
   });
-    // --- SỰ KIỆN LIÊN QUAN ĐẾN XỬ LÝ TỪ VỰNG không THỂ LƯU TRÙNG ---
+    // --- SỰ KIỆN LIÊN QUAN ĐẾN XỬ LÝ TỪ VỰNG KHÔNG THỂ LƯU TRÙNG ---
   //  refs.wordForm?.addEventListener("submit", async (event) => {
   //   event.preventDefault();
   //   if (!state.user) return;
@@ -549,8 +549,7 @@ function bindWordEvents() {
   //   }
   // });
 
-//DỮ LIỆU TỪ VỰNG CÓ THỂ LƯU TRÙNG
- refs.wordForm?.addEventListener("submit", async (event) => {
+refs.wordForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!state.user) return;
 
@@ -559,11 +558,11 @@ function bindWordEvents() {
   const sessionId = selectedSession;
   const english = refs.englishWordInput.value.trim();
   const meaning = refs.meaningInput.value.trim();
-  const partOfSpeech = refs.partOfSpeechSelect.value.trim();
+  const partOfSpeech = refs.partOfSpeechSelect.value.trim() || "other";
   const phonetic = refs.phoneticInput.value.trim();
   const audioUrl = refs.audioUrlInput.value.trim();
 
-  // ✅ validate trước
+  // validate
   if (!state.sessions.length) {
     showStatus(refs.wordMessage, "error", "Bạn cần tạo buổi học trước.");
     return;
@@ -579,17 +578,18 @@ function bindWordEvents() {
 
   const sessionName = getSessionNameById(sessionId);
 
-  const existing = state.vocabulary.find(
+  //  FIX LOGIC Ở ĐÂY
+const existingWord = state.vocabulary.find(
     (item) =>
       normalizeText(item.english) === normalizeText(english) &&
-      item.sessionId === sessionId
+      item.partOfSpeech === partOfSpeech
   );
 
   const baseData = {
     english,
     englishNormalized: normalizeText(english),
     phonetic,
-    partOfSpeech: partOfSpeech || "other",
+    partOfSpeech,
     meaning,
     meaningsByPos: state.suggestionPayload?.meaningsByPos || {},
     sessionId,
@@ -599,30 +599,40 @@ function bindWordEvents() {
   };
 
   try {
-    if (existing) {
-      await updateDoc(getUserDoc("vocabulary", existing.id), baseData);
-      showStatus(refs.wordMessage, "success", `Đã cập nhật từ "${english}".`);
+    if (existingWord) {
+      // KIỂM TRA XEM NÓ NẰM Ở BUỔI NÀO
+      if (existingWord.sessionId === sessionId) {
+        // Nằm cùng buổi hiện tại -> Tiến hành CẬP NHẬT (Logic của bạn)
+        await updateDoc(getUserDoc("vocabulary", existingWord.id), baseData);
+        showStatus(refs.wordMessage, "success", `Đã cập nhật từ "${english}" (${partOfSpeech}).`);
+      } else {
+        // Nằm ở buổi KHÁC -> CẢNH BÁO VÀ CHẶN LẠI
+        showStatus(
+          refs.wordMessage, 
+          "warning", 
+          `Từ "${english}" (${partOfSpeech}) đã tồn tại ở buổi học: "${existingWord.sessionName}".`
+        );
+        return; // Dừng lại, không cho lưu
+      }
     } else {
+      // CHƯA CÓ Ở ĐÂU CẢ -> THÊM MỚI (Logic của bạn)
       await addDoc(getUserCollection("vocabulary"), {
         ...baseData,
         createdAt: serverTimestamp(),
         stats: calcStats()
       });
-      showStatus(refs.wordMessage, "success", `Đã lưu từ "${english}".`);
+      showStatus(refs.wordMessage, "success", `Đã lưu từ "${english}" (${partOfSpeech}).`);
     }
 
-  
     refs.wordForm.reset();
     refs.englishWordInput.focus();
-    
     refs.wordSessionSelect.value = selectedSession;
-
     clearSuggestionUI();
 
   } catch (error) {
     console.error(error);
     showStatus(refs.wordMessage, "error", `Không thể lưu từ vựng: ${error.message}`);
-  }
+  }  
 });
 
   refs.wordFilterSession?.addEventListener("change", renderWordTable);
